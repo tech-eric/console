@@ -63,7 +63,16 @@ int console_parser(const char *string)
     int  offset_array[CMD_SEGMENT_COUNT];
 
     /* Make sure input string not empty */
-    if(string[0] == '\0') return -1;
+    if(string[0] == '\0') {
+        printf("Error: Command string is empty\n");
+        return -1;
+    }
+
+    /* Make sure input string length is not override */
+    if(strlen(string) > CMD_BUF_SIZE) {
+        printf("Error: Command string is too long\n");
+        return -1;
+    }
 
     /* Copy input string to bufer */
     strcpy(cmd_buf, string);
@@ -71,6 +80,9 @@ int console_parser(const char *string)
     /* Divid cmd string into several segment, end with '\0' */
     segment_amount = string_divide(cmd_buf, offset_array);
 
+    if(segment_amount < 0) {
+        return -1;
+    }
 	//string_first(string, cmd_name);
 
 	for (i = 0; i < cmd_num; i++) {
@@ -120,7 +132,10 @@ static int string_divide(char *str, int *record)
 		for ( ; ; ) {
 
 				if((ret = next_char(str, i)) >= 0) {
-						cnt++;
+						if(cnt++ > CMD_SEGMENT_COUNT) {
+                            printf("ERROR: Command have too many paramer\n");
+                            return -1;
+                        }
 						record[j++] = ret;
 						i = ret +1;
 				} else
