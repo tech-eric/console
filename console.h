@@ -1,7 +1,7 @@
 /*
  *  Description: This is a integrated libary file, used to give a
  *  console interaction function for systemless project. You can
- *  get, modify and share this file, but make sure not to delete 
+ *  get, modify and share this file, but make sure not to delete
  *  this description please.
  *  Author: Eric Gao "eric.gao@foxmail.com"
  *  Date: 2017.10.21
@@ -15,7 +15,7 @@
 /* Max size for cmd buffer */
 #define CMD_BUF_SIZE  32
 /* Max amount the cmd string can be divided */
-#define CMD_SEGMENT_COUNT 5 
+#define CMD_SEGMENT_COUNT 5
 
 /*
  * @console_parser: console command parser function
