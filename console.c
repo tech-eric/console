@@ -1,7 +1,7 @@
 /*
  *  Description: This is a integrated libary file, used to give a
  *  console interaction function for systemless project. You can
- *  get, modify and share this file, but make sure not to delete 
+ *  get, modify and share this file, but make sure not to delete
  *  this description please.
  *  Author: Eric Gao "eric.gao@foxmail.com"
  *  Date: 2017.10.21
@@ -13,36 +13,55 @@
 #include "string.h"
 #include "stdio.h"
 
-#define SPACE 0x20
+/* Function define */
+static int string_divide(char *str, int *record);
 
-/* Make a function pointer typedefine */
-typedef int (*FUNC)(int segment_amount, int *offset_array, char *string);
 
-/*
-*  A console command
-*  @name: the command name
-*  @func: the pointer to function that have the same name with command.
-*/
-struct cmd{
+/**********************************************************
+
+  func ---> cmd ---> cmd_list ---> console_cmd_register
+
+ *********************************************************/
+
+/* Callback function model */
+typedef int (*FUNC)(int segment_amount,int *offset_array,char *string);
+
+/* Console command model */
+typedef struct {
 	char *name;
 	FUNC func;
-};
+}cmd;
 
-int test(int  segment_amount, int *offset_array, char *string)
+/* cmd list for callback function */
+static cmd cmd_list[CMD_LIST_MAX];
+
+/* Register the given callback function into cmd_list array */
+int console_cmd_register(char *name, const FUNC func)
 {
-    printf("%s, %d, %d\n", __func__, __LINE__, segment_amount);
+    static int cmd_list_index = 0;
+    static unsigned char flag_init = 0;
+
+    /*
+     * The first time call this function need full all the array
+     * with 0
+     */
+    if(flag_init == 0) {
+        flag_init = 1;
+        memset((void *)cmd_list, 0, sizeof(cmd_list));
+    }
+
+    /* Init cmd_list array using the given pointer address */
+    if(cmd_list_index < CMD_LIST_MAX) {
+        cmd_list[cmd_list_index].name = name;
+        cmd_list[cmd_list_index].func = func;
+        cmd_list_index++;
+    }else {
+        printf("Error: cmd list is full\n");
+        return -1;
+    }
 
     return 0;
 }
-
-static struct cmd cmd_list[] = {
-	{"test", &test},
-};
-
-#define cmd_num sizeof(cmd_list)/sizeof(cmd_list[0])
-
-/* Define for used function */
-static int string_divide(char *str, int *record);
 
 /*
  * @console_parser: function to paser the input command string,
@@ -79,20 +98,23 @@ int console_parser(const char *string)
 
     /* Divid cmd string into several segment, end with '\0' */
     segment_amount = string_divide(cmd_buf, offset_array);
-
     if(segment_amount < 0) {
         return -1;
     }
-	//string_first(string, cmd_name);
 
-	for (i = 0; i < cmd_num; i++) {
-		if((strcmp(&cmd_buf[offset_array[0]], cmd_list[i].name)) == 0)
-					cmd_list[i].func(segment_amount, offset_array, cmd_buf);
+	for (i = 0; cmd_list[i].func != NULL; i++) {
+		if((strcmp(&cmd_buf[offset_array[0]], cmd_list[i].name)) == 0) {
+	        cmd_list[i].func(segment_amount, offset_array, cmd_buf);
+            return 0;
+        }
 	}
 
-	return 0;
+    printf("Error: Unsupported command\n");
+
+    return 0;
 }
 
+#define SPACE 0x20
 
 /* Find the next space character */
 static int next_space(char *str, int i)

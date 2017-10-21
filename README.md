@@ -26,7 +26,7 @@ Description:
    so, the function name is: string[offset_array[0]],  the first parameter is string[offset_array[1]], the second parameter is
    string[offset_array[2]]......
 
- Step 5: add your callback function to the cmd_list array.
+ Step 5: add your callback function to the cmd_list array using console_cmd_register function.
 
  Step6: include console.h in your source file, and then you can use the console_parser function to analysis the input command.
 
