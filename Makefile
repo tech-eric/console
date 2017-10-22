@@ -1,3 +1,3 @@
 console: console.c
-	cc -c console.c
-	ar -r libconsole.a console.o
+	arm-none-eabi-gcc -c console.c
+	arm-none-eabi-ar -r libconsole.a console.o
