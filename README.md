@@ -35,3 +35,5 @@ Description:
        name in your build command. for example:
 
        gcc -o main main.c -L PATHTOLIBRARY -lconsole
+3. If you are using windows development envirement, just copy the socrce file and head file to your project or you can create a
+   library using keil. And then add the generated library file libconsole.lib in your project.
